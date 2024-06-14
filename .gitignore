@@ -1,0 +1,6 @@
+.env
+.idea
+.git
+poetry.lock
+db.sqlite3
+tests
