@@ -1,13 +1,15 @@
-import numpy as np
-import cv2 as cv
-import base64
+from base64 import b64decode
+from time import sleep
 from threading import Thread
+from io import BytesIO
+
+from numpy import where, all, transpose, array
+from cv2 import cvtColor, TM_CCOEFF_NORMED, COLOR_BGR2GRAY, matchTemplate
 from pygetwindow import getWindowsWithTitle
 from mss import mss
-from pyautogui import click, sleep
+from pyautogui import click
 from keyboard import is_pressed
-from io import BytesIO
-from PIL import Image
+from PIL.Image import open
 
 button_base64 = """iVBORw0KGgoAAAANSUhEUgAAAKoAAAA2CAYAAABX0gK6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGY0lEQVR4nO3cf2xV5R3H8fe59
 /beW9pCS2mtRAQtf7hEqL8KRiZLRwUs3ZwLGNFULYMFiEBMNNFIlaVMSNZlOJYIA6c1mlRDDMuQiPN6q6JC8QctjEWg/JB20iH2cnu5vff23vPsj+dAW05Fl
@@ -41,54 +43,53 @@ def get_window():
 
 
 def base64_to_image():
-    image_data = base64.b64decode(button_base64)
-    image = Image.open(BytesIO(image_data))
-    return cv.cvtColor(np.array(image), cv.COLOR_BGR2GRAY)
+    image_data = b64decode(button_base64)
+    image = open(BytesIO(image_data))
+    return cvtColor(array(image), COLOR_BGR2GRAY)
 
 
 def find_patt(image, patt):
-    img_grey = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    res = cv.matchTemplate(img_grey, patt, cv.TM_CCOEFF_NORMED)
-    loc = np.where(res > 0.6)
+    img_grey = cvtColor(image, COLOR_BGR2GRAY)
+    res = matchTemplate(img_grey, patt, TM_CCOEFF_NORMED)
+    loc = where(res > 0.6)
     return zip(*loc[::-1])
 
 
 def find_color(color, image):
     mapping = (color[2], color[1], color[0], 255)
-    indexes = np.where(np.all(image == mapping, axis=-1))
-    return np.transpose(indexes)
+    indexes = where(all(image == mapping, axis=-1))
+    return transpose(indexes)
 
 
-def run(color, button):
-    monitor = get_window()
-    if not monitor:
-        return
+def run(color, mon, button):
     with mss() as sct:
         while True:
-            img_arr = np.array(sct.grab(monitor))
+            img_arr = array(sct.grab(mon))
             result = find_color(color, img_arr)
             if len(result):
-                click(result[0][1] + monitor.get('left'), result[0][0] + monitor.get('top'))
+                click(result[0][1] + mon.get('left'), result[0][0] + mon.get('top'))
             else:
                 if button is not None:
                     points = list(find_patt(img_arr, button))
                     if points:
-                        click(points[0][0] + monitor.get("left") + 15, points[0][1] + monitor.get("top") + 15)
+                        click(points[0][0] + mon.get("left") + 15, points[0][1] + mon.get("top") + 15)
             if is_pressed("q"):
-                print("Stop")
                 break
             sleep(5 * 10 ** -5)
 
 
 if __name__ == '__main__':
-    thread_yellow = Thread(target=run, args=((205, 220, 0), base64_to_image()))
-    thread_yellow_glow = Thread(target=run, args=((230, 255, 145), None))
-    # thread_freeze = Thread(target=run, args=((130, 220, 233), None))
+    monitor = get_window()
+    if not monitor:
+        exit(0)
+
+    thread_yellow = Thread(target=run, args=((205, 220, 0), monitor, base64_to_image()))
+    thread_yellow_glow = Thread(target=run, args=((230, 255, 145), monitor, None))
 
     thread_yellow.start()
     thread_yellow_glow.start()
-    # thread_freeze.start()
 
     thread_yellow.join()
     thread_yellow_glow.join()
-    # thread_freeze.join()
+
+    print('Stop')

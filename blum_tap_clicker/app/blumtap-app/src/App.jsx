@@ -16,7 +16,6 @@ import Main from './components/main'
 function App() {
 	const [user, setUser] = useState(null)
 	const [token, setToken] = useState(null)
-	const [error, setError] = useState(null)
 	const [output, setOutput] = useState('')
 	const [show, setShow] = useState(false)
 	const [password, setPassword] = useState('')
@@ -46,7 +45,6 @@ function App() {
 			})
 			.catch(error => {
 				console.error('ERROR_LOGIN', error)
-				setError(error.response || { data: { error: 'Unknown error' } })
 			})
 	}
 
@@ -61,7 +59,6 @@ function App() {
 			})
 			.catch(error => {
 				console.error('ERROR_SIGNUP', error)
-				setError(error.response || { data: { error: 'Unknown error' } })
 			})
 	}
 
@@ -113,7 +110,7 @@ function App() {
 				<CSSTransition in={show} timeout={500} classNames='alert' unmountOnExit>
 					<div className='d-flex justify-content-center'>
 						<Alert variant='success'>
-							<Alert.Heading >Вывод:</Alert.Heading>
+							<Alert.Heading>Вывод:</Alert.Heading>
 							<p>{output}</p>
 						</Alert>
 					</div>
@@ -145,8 +142,6 @@ function App() {
 						element={
 							<Main
 								token={token}
-								error={error ? error.data.error : 'none-id'}
-								setError={setError}
 								setOutput={setOutput}
 								setShow={setShow}
 							/>

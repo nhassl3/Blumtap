@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { SendFill } from 'react-bootstrap-icons'
 import { Command } from '@tauri-apps/api/shell'
-import treeKill from 'tree-kill'
+import { invoke } from "@tauri-apps/api"
 
-
-function Main({ token, error, setError, setOutput, setShow }) {
+function Main({ token, setOutput, setShow }) {
 	const [state, setState] = useState(false)
   const [isButtonLocked, setIsButtonLocked] = useState(false)
   const [scriptProcess, setScriptProcess] = useState(null)
@@ -21,13 +20,15 @@ function Main({ token, error, setError, setOutput, setShow }) {
 
   const stopScript = async () => {
       if (scriptProcess) {
-				treeKill(scriptProcess.pid, 'SIGTERM', error => {
-					if (error) {
-						handleMessage("Error in stopping process")
-					} else {
+				scriptProcess.kill()
+				.then(() => {
+						setScriptProcess(null)
 						handleMessage('Script has been stopped')
-					}
 				})
+				.catch(() => {
+					handleMessage('Error stopping process')
+				})
+				invoke('close_script')
       } else {
 				handleMessage('No script running')
 			}
@@ -36,29 +37,19 @@ function Main({ token, error, setError, setOutput, setShow }) {
 	useEffect(() => {
 		const btn = document.getElementById('toggleButton')
 		blumtap.stdout.on('data', data => {
+			handleMessage(data)
 			if (data.includes('Run') || data.includes('Stop')) {
 				btn.classList.toggle('active')
-				setState(!state)
-				handleMessage(data)
-			} else {
-				handleMessage(data)
+				setState(false)
+				setScriptProcess(null)
 			}
-		})
-		blumtap.on('close', code => {
-			setScriptProcess(null)
-			handleMessage(`Sidecar process exited with code ${code.code}`)
 		})
 		if (state && !token) {
 			btn.classList.toggle('active')
 			stopScript()
-			setState(!state)
+			setState(false)
 		}
-		if (error !== 'none-id') {
-			btn.classList.toggle('active')
-			setState(!state)
-			setError(null)
-		}
-	}, [state, token, error, setError])
+	}, [state, token])
 
 	const runEvent = async () => {
 		const btn = document.getElementById('toggleButton')
@@ -114,7 +105,7 @@ function Main({ token, error, setError, setOutput, setShow }) {
 				{token ? (
 					<p className='p-5'>Ваш ID: {token}</p>
 				) : (
-					<p className='p-5'>Ваш ID: {error}</p>
+					<p className='p-5'>Ваш ID: none-id</p>
 				)}
 			</div>
 		</div>

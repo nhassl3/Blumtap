@@ -3,33 +3,35 @@
     windows_subsystem = "windows"
 )]
 
-// use tauri::api::process::{Command, CommandEvent};
-// use tauri::Manager;
+use std::process::Command;
+
+#[tauri::command]
+fn close_script() { 
+    let process_name = "clicker.exe";
+    let mut cmd = Command::new("taskkill"); // For windows systems ("pkill" - for UNIX)
+    cmd.arg("/f"); // Forcible termination of the process
+    cmd.arg("/IM").arg(process_name); // terminate process
+
+    match cmd.output() {
+        Ok(output) => {
+            if output.status.success() {
+                println!("Processes with name '{}' killed successfully.", process_name);
+            } else {
+                println!("Failed to kill processes with name '{}'.", process_name);
+                if let Some(code) = output.status.code() {
+                    println!("taskkill command exited with code {}.", code);
+                }
+            }
+        },
+        Err(e) => {
+            println!("Error executing taskkill command: {}", e);
+        }
+    }
+}
 
 fn main() {
     tauri::Builder::default()
-        // .setup(|app| {
-        //     let window = app.get_window("main").unwrap();
-
-        //     let (mut rx, mut child) = Command::new_sidecar("blumtap")
-        //         .expect("failed to create `my-sidecar` binary command")
-        //         .spawn()
-        //         .expect("Failed to spawn sidecar");
-        
-        //     tauri::async_runtime::spawn(async move {
-        //         // read events such as stdout
-        //         while let Some(event) = rx.recv().await {
-        //             if let CommandEvent::Stdout(line) = event {
-        //             window
-        //                 .emit("message", Some(format!("'{}'", line)))
-        //                 .expect("failed to emit event");
-        //             // write to stdin
-        //             child.write("message from Rust\n".as_bytes()).unwrap();
-        //             }
-        //         }
-        //     });
-        //     Ok(())
-        // })
+        .invoke_handler(tauri::generate_handler![close_script])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
