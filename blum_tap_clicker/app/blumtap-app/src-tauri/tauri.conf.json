@@ -2,12 +2,12 @@
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:5173/",
-    "distDir": "../dist"
+    "devPath": "https://luxury-gumption-209ef5.netlify.app/",
+    "distDir": "https://luxury-gumption-209ef5.netlify.app/"
   },
   "package": {
     "productName": "blumtap-app-desktop",
-    "version": "0.1.0"
+    "version": "0.1.2"
   },
   "tauri": {
     "allowlist": {
