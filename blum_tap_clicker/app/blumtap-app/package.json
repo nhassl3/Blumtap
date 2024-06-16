@@ -1,7 +1,7 @@
 {
   "name": "blumtap-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -18,8 +18,7 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
-    "react-transition-group": "^4.4.5",
-    "tree-kill": "^1.2.2"
+    "react-transition-group": "^4.4.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
