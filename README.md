@@ -45,7 +45,7 @@ on
           },
 
 7. Run frontend:
-    > tauri run dev
+    > cargo tauri dev
 
 - **THIS VERSION IS TEST. PLEASE ADD YOUR ISSUE FOR FIX SOME BAGS! EVERYONE THANK WHO DO THIS!**
 
@@ -60,5 +60,8 @@ opencv-python = "^4.10.0.82"\
 keyboard = "^0.13.5"\
 nuitka = "^2.3.4"
 
+## Changelog
+You can no longer run the app twice! The bug has been fixed
+
 ## Version
-v0.1.2
+v0.1.3
