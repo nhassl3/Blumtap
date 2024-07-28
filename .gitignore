@@ -4,4 +4,5 @@
 poetry.lock
 db.sqlite3
 tests
+__init__.py
 git-assets/blum tap1.mp4
