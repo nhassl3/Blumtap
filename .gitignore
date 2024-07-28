@@ -1,6 +1,7 @@
 .env
 .idea
 .git
+.vscode
 poetry.lock
 db.sqlite3
 tests
