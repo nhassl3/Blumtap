@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class BlumtapConfig(AppConfig):
+class BlumtapBackendConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'blumtap'
+    name = 'blumtap_backend'

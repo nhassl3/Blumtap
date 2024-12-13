@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('blum/', include("blumtap.urls")),
+    path('signup/', views.register),
+    path('login/', views.login),
 ]

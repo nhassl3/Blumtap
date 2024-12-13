@@ -23,7 +23,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(',') if DEBUG else os.getenv("A
 # Application definition
 
 INSTALLED_APPS = [
-    'blumtap.apps.BlumtapConfig',
+    'blumtap_backend.apps.BlumtapBackendConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +48,7 @@ MIDDLEWARE = [
 
 # Cors origin whitelist
 
-CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST").split(',') if DEBUG else os.getenv("CORS_ORIGIN_WHITELIST_PROD").split(",")
+CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST").split(',') if DEBUG else ["https://blumtap.netlify.app"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-ROOT_URLCONF = 'blumtap_backend.urls'
+ROOT_URLCONF = 'blumtap.urls'
 
 TEMPLATES = [
     {
@@ -77,7 +77,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'blumtap_backend.wsgi.application'
+WSGI_APPLICATION = 'blumtap.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
